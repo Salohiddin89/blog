@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Kommentlar — Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem; font-weight: 900;
+    }
+
+    .comments-table {
+        background: var(--card-bg);
+        border-radius: 12px; border: 1px solid var(--border);
+        overflow: hidden; box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--cream); }
+    th {
+        padding: 0.85rem 1.25rem;
+        text-align: left; font-size: 0.8rem; font-weight: 600;
+        color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+    }
+    td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9rem; vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--paper); }
+
+    .commenter {
+        display: flex; align-items: center; gap: 0.6rem;
+    }
+    .avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: 0.75rem; flex-shrink: 0;
+    }
+    .commenter-name { font-weight: 600; font-size: 0.9rem; }
+
+    .post-link { color: var(--accent2); text-decoration: none; font-weight: 500; }
+    .post-link:hover { text-decoration: underline; }
+
+    .msg { max-width: 300px; color: #3a342e; line-height: 1.5; }
+
+    .empty-row td { text-align: center; padding: 3rem; color: var(--muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>💬 Kommentlar</h1>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Dashboard</a>
+</div>
+
+<div class="comments-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Muallif</th>
+                <th>Post</th>
+                <th>Xabar</th>
+                <th>Sana</th>
+                <th>O'chirish</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in comments %}
+            <tr>
+                <td>
+                    <div class="commenter">
+                        <div class="avatar">
+                            {{ c.first_name[0]|upper }}{{ c.last_name[0]|upper }}
+                        </div>
+                        <div class="commenter-name">{{ c.first_name }} {{ c.last_name }}</div>
+                    </div>
+                </td>
+                <td>
+                    <a href="{{ url_for('post_detail', post_id=c.post_id) }}"
+                       class="post-link" target="_blank">
+                        {{ c.post_title[:40] }}{% if c.post_title|length > 40 %}...{% endif %}
+                    </a>
+                </td>
+                <td class="msg">{{ c.message[:150] }}{% if c.message|length > 150 %}...{% endif %}</td>
+                <td style="white-space:nowrap;color:var(--muted);font-size:0.82rem">
+                    {{ c.created_at[:16] if c.created_at else '' }}
+                </td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('admin_delete_comment', comment_id=c.id) }}"
+                          onsubmit="return confirm('Kommentni o\'chirmoqchimisiz?')">
+                        <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="empty-row">💬 Hali kommentlar yo'q</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

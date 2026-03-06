@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — BlogSpace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .back-link {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        color: var(--muted); text-decoration: none; font-size: 0.875rem;
+        margin-bottom: 2rem; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .post-hero {
+        border-radius: 16px; overflow: hidden;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-hover);
+    }
+    .post-hero img {
+        width: 100%; max-height: 500px;
+        object-fit: cover; display: block;
+    }
+
+    .post-header { margin-bottom: 2rem; }
+    .post-meta {
+        display: flex; align-items: center; gap: 1rem;
+        margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .post-meta .badge {
+        background: var(--accent); color: white;
+        padding: 0.25rem 0.8rem; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .post-meta .date { color: var(--muted); font-size: 0.875rem; }
+    .post-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 900; line-height: 1.15;
+        margin-bottom: 1rem;
+    }
+    .post-short-desc {
+        font-size: 1.2rem; color: var(--muted);
+        line-height: 1.6; font-style: italic;
+        border-left: 4px solid var(--accent);
+        padding-left: 1.25rem;
+    }
+
+    .post-stats-bar {
+        display: flex; align-items: center; gap: 1.5rem;
+        padding: 1rem 1.5rem;
+        background: var(--cream); border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .stat-item { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.9rem; }
+    .stat-item strong { color: var(--ink); font-size: 1rem; }
+
+    .like-btn {
+        margin-left: auto;
+        display: flex; align-items: center; gap: 0.5rem;
+        background: white; border: 2px solid var(--border);
+        padding: 0.5rem 1.2rem; border-radius: 30px;
+        cursor: pointer; font-size: 0.9rem; font-weight: 600;
+        transition: all 0.2s; color: var(--ink);
+    }
+    .like-btn:hover { border-color: #e05555; color: #e05555; }
+    .like-btn.liked { border-color: #e05555; color: #e05555; background: #fff5f5; }
+    .like-btn .heart { font-size: 1.1rem; transition: transform 0.2s; }
+    .like-btn:hover .heart, .like-btn.liked .heart { transform: scale(1.2); }
+
+    .post-content {
+        font-size: 1.05rem; line-height: 1.85;
+        color: #2a2520;
+        max-width: 800px;
+    }
+    .post-content p { margin-bottom: 1.25rem; }
+
+    .video-section {
+        margin: 2.5rem 0;
+        background: var(--ink); border-radius: 12px;
+        overflow: hidden;
+    }
+    .video-label {
+        padding: 0.75rem 1.25rem;
+        background: var(--accent); color: white;
+        font-size: 0.85rem; font-weight: 700;
+        letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .video-wrapper {
+        position: relative; padding-bottom: 56.25%;
+        height: 0; overflow: hidden;
+    }
+    .video-wrapper iframe {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; border: none;
+    }
+    .video-link {
+        padding: 1rem 1.25rem;
+        display: flex; align-items: center; gap: 0.5rem;
+        color: #7dd3fc; text-decoration: none;
+        font-size: 0.9rem; word-break: break-all;
+    }
+
+    /* COMMENTS */
+    .divider {
+        border: none; border-top: 2px solid var(--border);
+        margin: 3rem 0;
+    }
+    .comments-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem; margin-bottom: 2rem;
+        display: flex; align-items: center; gap: 0.75rem;
+    }
+    .comments-section h2 .count {
+        background: var(--accent); color: white;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.875rem; font-weight: 700;
+        padding: 0.2rem 0.7rem; border-radius: 20px;
+    }
+
+    .comment-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px; padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+        transition: border-color 0.2s;
+    }
+    .comment-card:hover { border-color: var(--accent2); }
+    .comment-header {
+        display: flex; align-items: center; gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .comment-avatar {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    .comment-name { font-weight: 600; color: var(--ink); }
+    .comment-date { font-size: 0.8rem; color: var(--muted); }
+    .comment-text { color: #3a342e; line-height: 1.65; font-size: 0.95rem; }
+
+    /* COMMENT FORM */
+    .comment-form-card {
+        background: linear-gradient(135deg, var(--ink) 0%, #1c2d38 100%);
+        border-radius: 16px; padding: 2rem;
+        margin-top: 2.5rem;
+    }
+    .comment-form-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; color: white;
+        margin-bottom: 1.5rem;
+        display: flex; align-items: center; gap: 0.5rem;
+    }
+    .form-row {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 1rem; margin-bottom: 1rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.82rem; font-weight: 600; color: #aab; letter-spacing: 0.5px; text-transform: uppercase; }
+    .form-group input,
+    .form-group textarea {
+        background: rgba(255,255,255,0.07);
+        border: 1.5px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: white; font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem; outline: none;
+        transition: border-color 0.2s;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #667; }
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: var(--accent);
+        background: rgba(255,255,255,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .submit-btn {
+        background: var(--accent); color: white;
+        border: none; padding: 0.8rem 2rem;
+        border-radius: 8px; font-size: 0.95rem; font-weight: 700;
+        cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center; gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .submit-btn:hover { background: #a8421d; transform: translateY(-1px); }
+
+    @media (max-width: 600px) {
+        .form-row { grid-template-columns: 1fr; }
+        .post-stats-bar { gap: 1rem; }
+        .like-btn { margin-left: 0; width: 100%; justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('index') }}" class="back-link">← Bosh sahifaga qaytish</a>
+
+{% if post.image %}
+<div class="post-hero">
+    <img src="{{ url_for('static', filename='uploads/' + post.image) }}" alt="{{ post.title }}">
+</div>
+{% endif %}
+
+<div class="post-header">
+    <div class="post-meta">
+        <span class="badge">Blog</span>
+        <span class="date">📅 {{ post.created_at[:10] if post.created_at else '' }}</span>
+    </div>
+    <h1 class="post-title">{{ post.title }}</h1>
+    <p class="post-short-desc">{{ post.short_desc }}</p>
+</div>
+
+<div class="post-stats-bar">
+    <div class="stat-item">👁 <strong id="view-count">{{ post.views }}</strong> ko'rishlar</div>
+    <div class="stat-item">❤️ <strong id="like-count">{{ post.likes }}</strong> layklar</div>
+    <div class="stat-item">💬 <strong>{{ comments|length }}</strong> kommentlar</div>
+    <button class="like-btn" id="like-btn" onclick="toggleLike({{ post.id }})">
+        <span class="heart">❤️</span>
+        <span id="like-text">Layk bosish</span>
+    </button>
+</div>
+
+<div class="post-content">
+    {{ post.description | safe }}
+</div>
+
+{% if post.video %}
+<div class="video-section">
+    <div class="video-label">🎬 Video</div>
+    {% set yt_id = '' %}
+    {% if 'youtube.com/watch?v=' in post.video %}
+        {% set yt_id = post.video.split('v=')[1].split('&')[0] %}
+    {% elif 'youtu.be/' in post.video %}
+        {% set yt_id = post.video.split('youtu.be/')[1].split('?')[0] %}
+    {% endif %}
+    {% if yt_id %}
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/{{ yt_id }}"
+                    allowfullscreen title="Video"></iframe>
+        </div>
+    {% else %}
+        <a href="{{ post.video }}" target="_blank" class="video-link">
+            🔗 {{ post.video }}
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<hr class="divider">
+
+<div class="comments-section">
+    <h2>Kommentlar <span class="count">{{ comments|length }}</span></h2>
+
+    {% for comment in comments %}
+    <div class="comment-card">
+        <div class="comment-header">
+            <div class="comment-avatar">
+                {{ comment.first_name[0]|upper }}{{ comment.last_name[0]|upper }}
+            </div>
+            <div>
+                <div class="comment-name">{{ comment.first_name }} {{ comment.last_name }}</div>
+                <div class="comment-date">{{ comment.created_at[:16] if comment.created_at else '' }}</div>
+            </div>
+        </div>
+        <div class="comment-text">{{ comment.message }}</div>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:2rem;color:var(--muted);background:var(--cream);border-radius:10px;">
+        😶 Hali kommentlar yo'q. Birinchi bo'ling!
+    </div>
+    {% endfor %}
+
+    <div class="comment-form-card">
+        <h3>✍️ Komment yozish</h3>
+        <form method="POST" action="{{ url_for('add_comment', post_id=post.id) }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ism</label>
+                    <input type="text" name="first_name" placeholder="Ismingiz" required>
+                </div>
+                <div class="form-group">
+                    <label>Familiya</label>
+                    <input type="text" name="last_name" placeholder="Familiyangiz" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Xabar</label>
+                <textarea name="message" placeholder="Fikringizni yozing..." required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">📤 Yuborish</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function toggleLike(postId) {
+    const btn = document.getElementById('like-btn');
+    btn.disabled = true;
+    try {
+        const res = await fetch(`/post/${postId}/like`, { method: 'POST' });
+        const data = await res.json();
+        document.getElementById('like-count').textContent = data.likes;
+        if (data.liked) {
+            btn.classList.add('liked');
+            document.getElementById('like-text').textContent = 'Layk berildi';
+        } else {
+            btn.classList.remove('liked');
+            document.getElementById('like-text').textContent = 'Layk bosish';
+        }
+    } finally { btn.disabled = false; }
+}
+
+// Check initial like state
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const res = await fetch(`/post/{{ post.id }}/liked`);
+        const data = await res.json();
+        if (data.liked) {
+            document.getElementById('like-btn').classList.add('liked');
+            document.getElementById('like-text').textContent = 'Layk berildi';
+        }
+    } catch(e) {}
+});
+</script>
+{% endblock %}

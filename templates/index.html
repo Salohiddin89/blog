@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block title %}BlogSpace — Bosh sahifa{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, var(--ink) 0%, #1a2a35 100%);
+        border-radius: 16px;
+        padding: 4rem 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .hero-tag {
+        display: inline-block;
+        background: var(--accent);
+        color: white; font-size: 0.75rem; font-weight: 700;
+        padding: 0.3rem 0.8rem; border-radius: 20px;
+        letter-spacing: 1px; text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900; color: white;
+        line-height: 1.1; margin-bottom: 1rem;
+    }
+    .hero h1 em { color: var(--accent); font-style: italic; }
+    .hero p { color: #aab; font-size: 1.1rem; max-width: 540px; line-height: 1.6; }
+
+    .section-header {
+        display: flex; align-items: center; gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .section-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem; font-weight: 700;
+    }
+    .section-header .line {
+        flex: 1; height: 1px; background: var(--border);
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+    }
+
+    .post-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        display: flex; flex-direction: column;
+    }
+    .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--accent);
+    }
+
+    .post-card-img {
+        width: 100%; height: 220px;
+        object-fit: cover; display: block;
+        background: var(--cream);
+    }
+    .post-card-img-placeholder {
+        width: 100%; height: 220px;
+        background: linear-gradient(135deg, #e8e0d4 0%, #d4c9b8 100%);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 3rem;
+    }
+
+    .post-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .post-card-meta {
+        display: flex; align-items: center; gap: 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.8rem; color: var(--muted);
+    }
+    .post-card-meta .badge {
+        background: var(--cream); color: var(--accent);
+        padding: 0.2rem 0.6rem; border-radius: 20px;
+        font-weight: 600; font-size: 0.72rem;
+        border: 1px solid var(--border);
+    }
+    .post-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem; font-weight: 700;
+        line-height: 1.3; margin-bottom: 0.75rem;
+        color: var(--ink);
+    }
+    .post-card p {
+        color: var(--muted); font-size: 0.9rem;
+        line-height: 1.6; flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .post-card-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: space-between;
+        background: var(--cream);
+    }
+    .post-stats {
+        display: flex; gap: 1rem;
+        font-size: 0.82rem; color: var(--muted);
+    }
+    .post-stats span { display: flex; align-items: center; gap: 0.3rem; }
+    .read-btn {
+        font-size: 0.82rem; font-weight: 600;
+        color: var(--accent); text-decoration: none;
+        display: flex; align-items: center; gap: 0.3rem;
+        transition: gap 0.2s;
+    }
+    .read-btn:hover { gap: 0.6rem; }
+
+    .empty-state {
+        text-align: center; padding: 5rem 2rem;
+        background: var(--card-bg); border-radius: 16px;
+        border: 2px dashed var(--border);
+    }
+    .empty-state .icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-state h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem; margin-bottom: 0.5rem;
+    }
+    .empty-state p { color: var(--muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-tag">✦ Yangiliklar</div>
+    <h1>So'zlar orqali<br><em>dunyoni kashf eting</em></h1>
+    <p>Bilim, fikr va ilhom to'la maqolalar to'plami. Har bir post siz uchun maxsus yozilgan.</p>
+</div>
+
+<div class="section-header">
+    <h2>Barcha maqolalar</h2>
+    <div class="line"></div>
+    <span style="color:var(--muted);font-size:0.875rem;white-space:nowrap">{{ posts|length }} ta post</span>
+</div>
+
+{% if posts %}
+<div class="posts-grid">
+    {% for post in posts %}
+    <article class="post-card">
+        <a href="{{ url_for('post_detail', post_id=post.id) }}">
+            {% if post.image %}
+                <img class="post-card-img"
+                     src="{{ url_for('static', filename='uploads/' + post.image) }}"
+                     alt="{{ post.title }}">
+            {% else %}
+                <div class="post-card-img-placeholder">📝</div>
+            {% endif %}
+        </a>
+        <div class="post-card-body">
+            <div class="post-card-meta">
+                <span class="badge">Blog</span>
+                <span>{{ post.created_at[:10] if post.created_at else '' }}</span>
+            </div>
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.short_desc }}</p>
+        </div>
+        <div class="post-card-footer">
+            <div class="post-stats">
+                <span>👁 {{ post.views }}</span>
+                <span>❤️ {{ post.likes }}</span>
+            </div>
+            <a href="{{ url_for('post_detail', post_id=post.id) }}" class="read-btn">
+                O'qish →
+            </a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="icon">📭</div>
+    <h3>Hali postlar yo'q</h3>
+    <p>Admin yangi post qo'shishi kutilmoqda...</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 2rem; flex-wrap: gap;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 900;
+    }
+    .page-header h1 span { color: var(--accent); }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.25rem; margin-bottom: 2.5rem;
+    }
+    .stat-card {
+        background: var(--card-bg); border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 1.5rem; display: flex;
+        align-items: center; gap: 1rem;
+        box-shadow: var(--shadow);
+    }
+    .stat-icon {
+        width: 50px; height: 50px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; flex-shrink: 0;
+    }
+    .stat-icon.blue { background: #dbeafe; }
+    .stat-icon.red { background: #fee2e2; }
+    .stat-icon.green { background: #dcfce7; }
+    .stat-icon.yellow { background: #fef9c3; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 0.25rem; }
+
+    .section-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+    .section-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem; font-weight: 700;
+    }
+
+    .posts-table {
+        background: var(--card-bg);
+        border-radius: 12px; border: 1px solid var(--border);
+        overflow: hidden; box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--cream); }
+    th {
+        padding: 0.85rem 1.25rem;
+        text-align: left; font-size: 0.8rem; font-weight: 600;
+        color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+    }
+    td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9rem; vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--paper); }
+
+    .post-thumb {
+        width: 50px; height: 50px; border-radius: 8px;
+        object-fit: cover; display: block;
+    }
+    .post-thumb-placeholder {
+        width: 50px; height: 50px; border-radius: 8px;
+        background: var(--cream); display: flex;
+        align-items: center; justify-content: center; font-size: 1.25rem;
+    }
+
+    .post-title-col { font-weight: 600; max-width: 240px; }
+    .post-title-col a { color: var(--ink); text-decoration: none; }
+    .post-title-col a:hover { color: var(--accent); }
+
+    .actions { display: flex; gap: 0.5rem; align-items: center; }
+
+    .empty-row td { text-align: center; padding: 3rem; color: var(--muted); }
+
+    form.delete-form { display: inline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Admin <span>Dashboard</span></h1>
+        <p style="color:var(--muted);font-size:0.875rem;margin-top:0.3rem">Salom, {{ session.admin_username }}! 👋</p>
+    </div>
+    <a href="{{ url_for('admin_new_post') }}" class="btn btn-primary">+ Yangi post</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">📝</div>
+        <div>
+            <div class="stat-value">{{ posts|length }}</div>
+            <div class="stat-label">Jami postlar</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">👁</div>
+        <div>
+            <div class="stat-value">{{ total_views }}</div>
+            <div class="stat-label">Jami ko'rishlar</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red">❤️</div>
+        <div>
+            <div class="stat-value">{{ total_likes }}</div>
+            <div class="stat-label">Jami layklar</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow">💬</div>
+        <div>
+            <div class="stat-value">{{ total_comments }}</div>
+            <div class="stat-label">Jami kommentlar</div>
+        </div>
+    </div>
+</div>
+
+<div class="section-header">
+    <h2>Postlar ro'yxati</h2>
+    <a href="{{ url_for('admin_comments') }}" class="btn btn-secondary btn-sm">💬 Kommentlarni ko'rish</a>
+</div>
+
+<div class="posts-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Rasm</th>
+                <th>Sarlavha</th>
+                <th>Ko'rishlar</th>
+                <th>Layklar</th>
+                <th>Sana</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td>
+                    {% if post.image %}
+                        <img class="post-thumb"
+                             src="{{ url_for('static', filename='uploads/' + post.image) }}"
+                             alt="">
+                    {% else %}
+                        <div class="post-thumb-placeholder">📝</div>
+                    {% endif %}
+                </td>
+                <td class="post-title-col">
+                    <a href="{{ url_for('post_detail', post_id=post.id) }}" target="_blank">
+                        {{ post.title }}
+                    </a>
+                    <div style="font-size:0.78rem;color:var(--muted);font-weight:400;margin-top:0.2rem">
+                        {{ post.short_desc[:60] }}{% if post.short_desc|length > 60 %}...{% endif %}
+                    </div>
+                </td>
+                <td>👁 {{ post.views }}</td>
+                <td>❤️ {{ post.likes }}</td>
+                <td style="white-space:nowrap;color:var(--muted);font-size:0.82rem">
+                    {{ post.created_at[:10] if post.created_at else '' }}
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="{{ url_for('admin_edit_post', post_id=post.id) }}"
+                           class="btn btn-secondary btn-sm">✏️ Tahrir</a>
+                        <form class="delete-form"
+                              method="POST"
+                              action="{{ url_for('admin_delete_post', post_id=post.id) }}"
+                              onsubmit="return confirm('Rostdan ham o\'chirmoqchimisiz?')">
+                            <button type="submit" class="btn btn-danger btn-sm">🗑</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="empty-row">
+                    📭 Hali postlar yo'q.
+                    <a href="{{ url_for('admin_new_post') }}" style="color:var(--accent)">Birinchi postni qo'shing!</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
