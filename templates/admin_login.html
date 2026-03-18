@@ -5,63 +5,110 @@
 <style>
     .login-wrap {
         min-height: 75vh;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 2rem;
     }
+
     .login-card {
         background: var(--card-bg);
         border-radius: 20px;
         border: 1px solid var(--border);
         box-shadow: var(--shadow-hover);
         padding: 3rem;
-        width: 100%; max-width: 420px;
+        width: 100%;
+        max-width: 420px;
     }
+
     .login-icon {
-        width: 60px; height: 60px;
-        background: var(--ink); border-radius: 14px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.5rem; margin-bottom: 1.5rem;
+        width: 60px;
+        height: 60px;
+        background: var(--ink);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
     }
+
     .login-card h1 {
         font-family: 'Playfair Display', serif;
-        font-size: 1.75rem; font-weight: 900;
+        font-size: 1.75rem;
+        font-weight: 900;
         margin-bottom: 0.4rem;
     }
-    .login-card p { color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
 
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label {
-        display: block; font-size: 0.8rem; font-weight: 600;
-        color: var(--muted); margin-bottom: 0.4rem;
-        letter-spacing: 0.5px; text-transform: uppercase;
+    .login-card p {
+        color: var(--muted);
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
     }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
     .form-group input {
-        width: 100%; padding: 0.75rem 1rem;
-        border: 1.5px solid var(--border); border-radius: 8px;
-        font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
-        background: var(--paper); color: var(--ink); outline: none;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem;
+        background: var(--paper);
+        color: var(--ink);
+        outline: none;
         transition: border-color 0.2s;
     }
-    .form-group input:focus { border-color: var(--accent); }
+
+    .form-group input:focus {
+        border-color: var(--accent);
+    }
 
     .login-btn {
-        width: 100%; padding: 0.85rem;
-        background: var(--ink); color: white;
-        border: none; border-radius: 8px;
+        width: 100%;
+        padding: 0.85rem;
+        background: var(--ink);
+        color: white;
+        border: none;
+        border-radius: 8px;
         font-family: 'DM Sans', sans-serif;
-        font-size: 1rem; font-weight: 700;
-        cursor: pointer; transition: all 0.2s;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
         margin-top: 0.5rem;
     }
-    .login-btn:hover { background: var(--accent); }
+
+    .login-btn:hover {
+        background: var(--accent);
+    }
 
     .hint {
-        margin-top: 1.5rem; padding: 1rem;
-        background: var(--cream); border-radius: 8px;
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--cream);
+        border-radius: 8px;
         border: 1px solid var(--border);
-        font-size: 0.82rem; color: var(--muted);
+        font-size: 0.82rem;
+        color: var(--muted);
     }
-    .hint strong { color: var(--ink); }
+
+    .hint strong {
+        color: var(--ink);
+    }
 </style>
 {% endblock %}
 
@@ -84,9 +131,6 @@
             <button type="submit" class="login-btn">Kirish →</button>
         </form>
 
-        <div class="hint">
-            🔑 Default: <strong>admin</strong> / <strong>admin123</strong>
-        </div>
     </div>
-</div>
+</div>x
 {% endblock %}
